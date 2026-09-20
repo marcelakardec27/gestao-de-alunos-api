@@ -5,7 +5,9 @@ on:
   workflow_dispatch:
   push:
     branches:
+      - main
       - master
+      - testes-automatizados
 
 env:
   NODE_VERSION: '24.x'

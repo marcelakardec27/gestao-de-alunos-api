@@ -9,7 +9,9 @@ on:
       - completed
   push:
     branches:
+      - main
       - master
+      - testes-automatizados
 
 jobs:
   mocha-e2e-tests:

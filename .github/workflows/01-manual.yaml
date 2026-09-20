@@ -6,7 +6,9 @@ on:
   workflow_dispatch:
   push:
     branches:
+      - main
       - master
+      - testes-automatizados
 
 # tarefas dentro da pipeline = jobs
 jobs:
