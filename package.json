@@ -6,20 +6,27 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "test": "mocha --recursive \"test/**/*.test.js\""
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "chai": "^6.2.2",
     "cors": "^2.8.5",
+    "dotenv": "^18.0.1",
     "express": "^4.19.2",
     "js-yaml": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
+    "mocha": "^11.8.0",
     "morgan": "^1.10.0",
+    "supertest": "^7.2.2",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "mochawesome": "^8.1.1",
+    "nodemon": "^3.1.4",
+    "sinon": "^22.1.0"
   }
 }

@@ -1,0 +1,68 @@
+# CI de Nível 03 - Disparo após a conclusão de outra pipeline ou por Deploy/Push
+name: 'N3 - Execução por Deploy'
+
+# Regras de disparo
+on:
+  workflow_run:
+    workflows: ['N1 - Execução Manual', 'N2 - Execução Agendada']
+    types:
+      - completed
+  push:
+    branches:
+      - master
+
+jobs:
+  mocha-e2e-tests:
+    name: Executar Testes E2E (Mocha)
+    runs-on: ubuntu-latest
+
+    # Executa se o gatilho for um push OU se for um workflow_run concluído com sucesso
+    if: >
+      github.event_name == 'push' || 
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+
+    steps:
+      # Clone do projeto para a máquina virtual
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # Configuração do Node.js na versão LTS estável
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      # CORREÇÃO: Garante que o comando 'yarn' existe na máquina virtual
+      - name: Instalar o Yarn globalmente
+        run: npm install -g yarn
+
+      # Instalação das dependências (Mocha, Mochawesome, etc.)
+      - name: Instalar dependências
+        run: yarn install
+
+      # iniciar a API para os testes externos via SuperTest
+      - name: Iniciar API
+        run: |
+          yarn start > api.log 2>&1 &
+          for tentativa in {1..30}; do
+            if curl --fail --silent http://localhost:3000/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat api.log
+          exit 1
+
+      # Executar os testes e2e com Mocha e gerar o relatório Mochawesome
+      - name: Executar testes com Mocha
+        run: yarn test --reporter mochawesome --reporter-options reportDir=mochawesome-report,overwrite=true,html=true,json=true
+
+      # Salvando relatórios de testes (Mochawesome)
+      - name: Salvar relatório Mochawesome
+        uses: actions/upload-artifact@v4
+        if: always() # Garante o upload mesmo se os testes falharem
+        with:
+          name: relatorio-testes-mocha-deploy
+          path: ./mochawesome-report/
+          if-no-files-found: warn
+          retention-days: 7

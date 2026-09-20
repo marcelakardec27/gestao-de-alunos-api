@@ -1,0 +1,71 @@
+# CI de Nível 02 - Execução Agendada (Mocha + Yarn)
+name: 'N2 - Execução Agendada'
+
+# gatilhos / triggers - regras de disparo
+on:
+  # Permite disparar manualmente pela interface do GitHub para testes rápidos
+  workflow_dispatch:
+
+  # Configuração de agendamentos temporizados (UTC)
+  schedule:
+    # 1 - Minuto (0-59)
+    # 2 - Hora (0-23)
+    # 3 - Dia do Mês (1-31)
+    # 4 - Mês (1-12)
+    # 5 - Dia da Semana (0-6, onde 0 é Domingo e 5 é Sexta)
+
+    # Roda todos os dias às 23:00h (Horário de Brasília) -> 02:00h UTC
+    - cron: '0 2 * * 0-6'
+    
+
+# tarefas dentro da pipeline = jobs
+jobs:
+  mocha-scheduled-tests:
+    # máquina onde o job vai rodar
+    runs-on: ubuntu-latest
+
+    # passos do job
+    steps:
+      # clone do projeto para dentro da máquina virtual
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # instalação do Node.js (versão estável e compatível)
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+
+      # instalação do Yarn globalmente
+      - name: Instalando Yarn
+        run: npm install -g yarn
+
+      # instalação das dependências usando o Yarn
+      - name: Instalando dependências
+        run: yarn install
+
+      # iniciar a API para os testes externos via SuperTest
+      - name: Iniciando API
+        run: |
+          yarn start > api.log 2>&1 &
+          for tentativa in {1..30}; do
+            if curl --fail --silent http://localhost:3000/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat api.log
+          exit 1
+
+      # executar todos os testes Mocha e gerar o relatório Mochawesome
+      - name: Executando testes com Mocha
+        run: yarn test --reporter mochawesome --reporter-options reportDir=mochawesome-report,overwrite=true,html=true,json=true
+
+      # Salvar relatórios gerados pelo Mochawesome
+      - name: Salvando relatórios de testes
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }} # Garante a recolha do relatório mesmo se houver falhas
+        with:
+          path: ./mochawesome-report
+          name: Relatório de Testes Mochawesome Agendado
+          if-no-files-found: warn

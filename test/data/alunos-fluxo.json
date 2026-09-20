@@ -1,0 +1,36 @@
+{
+  "admin": {
+    "email": "admin@escola.com",
+    "senha": "admin123"
+  },
+  "cenarios": [
+  {
+    "nomeCenario": "aluna Joana",
+    "aluno": {
+      "nome": "Joana Novaes Kardec",
+      "emailPrefix": "novaes.kardec",
+      "matriculaPrefix": "2027",
+      "senha": "123456"
+    },
+    "disciplinaId": "disciplina-matematica",
+    "trabalho": {
+      "titulo": "Lista de Exercicios 2",
+      "descricao": "Resolucao dos exercicios propostos."
+    }
+  },
+  {
+    "nomeCenario": "aluno Marcos",
+    "aluno": {
+      "nome": "Marcos Oliveira Lima",
+      "emailPrefix": "marcos.oliveira",
+      "matriculaPrefix": "2028",
+      "senha": "654321"
+    },
+    "disciplinaId": "disciplina-programacao-web",
+    "trabalho": {
+      "titulo": "Projeto Web Responsivo",
+      "descricao": "Implementacao de uma pagina responsiva."
+    }
+  }
+  ]
+}
