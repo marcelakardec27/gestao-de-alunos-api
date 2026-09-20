@@ -14,19 +14,19 @@ on:
 jobs:
   mocha-tests:
     # máquina onde o job vai rodar
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     # passos do job
     steps:
       # clone do projeto para dentro da máquina virtual
       - name: Checkout do código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # instalação do Node.js
       - name: Configurar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20.x # Versão estável e compatível
+          node-version: 24.x
 
       # instalação do Yarn globalmente
       - name: Instalando Yarn
@@ -36,13 +36,26 @@ jobs:
       - name: Instalando dependências
         run: yarn install
 
+      # iniciar a API para o teste externo via SuperTest
+      - name: Iniciando API
+        run: |
+          yarn start > api.log 2>&1 &
+          for tentativa in {1..30}; do
+            if curl --fail --silent http://localhost:3000/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat api.log
+          exit 1
+
       # executar os testes Mocha e gerar o relatório Mochawesome
       - name: Executando testes com Mocha
         run: npx mocha "test/Externo/alunos.externo.test.js" --reporter mochawesome --reporter-options reportDir=mochawesome-report,overwrite=true,html=true,json=true
 
       # Salvar relatórios (Garante o upload da pasta correta mesmo se o teste falhar)
       - name: Salvando relatórios de testes
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: ${{ always() }} # Executa mesmo que algum teste falhe
         with:
           name: Relatório de Testes Mochawesome

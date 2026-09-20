@@ -15,13 +15,13 @@ env:
 jobs:
   # Job 1: Inspeção de sintaxe JavaScript
   inspecao:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Clone do projeto
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Configuração do Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -36,15 +36,15 @@ jobs:
 
   # Job 2: Testes com Mocha
   unidade:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [inspecao]
     if: always() # Garante a execução dos testes independentemente do linter
     steps:
       - name: Clone do projeto
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Configuração do Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -70,7 +70,7 @@ jobs:
         run: yarn test --reporter mochawesome --reporter-options reportDir=mochawesome-report,overwrite=true,html=true,json=true
 
       - name: Salvando relatório de testes unitários
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: relatorio-unitario-mocha
@@ -80,7 +80,7 @@ jobs:
 
   # Job 3: Deploy (Conectado apenas ao que realmente existe)
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [unidade] # CORREÇÃO: Depende apenas do job 'unidade' que já está a passar com sucesso!
     steps:
       - name: Simulação de Deploy

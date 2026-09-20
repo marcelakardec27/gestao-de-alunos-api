@@ -16,7 +16,7 @@ on:
 jobs:
   mocha-e2e-tests:
     name: Executar Testes E2E (Mocha)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     # Executa se o gatilho for um push OU se for um workflow_run concluído com sucesso
     if: >
@@ -26,13 +26,13 @@ jobs:
     steps:
       # Clone do projeto para a máquina virtual
       - name: Checkout do código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Configuração do Node.js na versão LTS estável
       - name: Configurar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20.x
+          node-version: 24.x
 
       # CORREÇÃO: Garante que o comando 'yarn' existe na máquina virtual
       - name: Instalar o Yarn globalmente
@@ -61,7 +61,7 @@ jobs:
 
       # Salvando relatórios de testes (Mochawesome)
       - name: Salvar relatório Mochawesome
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always() # Garante o upload mesmo se os testes falharem
         with:
           name: relatorio-testes-mocha-deploy
