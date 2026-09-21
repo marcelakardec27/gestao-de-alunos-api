@@ -110,12 +110,14 @@ documentação.
 A API usa **JWT** (`Authorization: Bearer <token>`). Todas as rotas exigem um token válido,
 exceto `POST /api/auth/login`.
 
-1. Faça login informando `email` e `senha` de um administrador ou de um aluno já cadastrado:
+1. Faça login informando `email` e `senha` definidos no `.env` (`ADMIN_EMAIL` e
+   `ADMIN_SENHA`, ou `ALUNO_EMAIL` e `ALUNO_SENHA`). Copie [`.env.example`](.env.example)
+   para `.env` e preencha os valores — esse ficheiro não é versionado.
 
    ```bash
    curl -X POST http://localhost:3000/api/auth/login \
      -H "Content-Type: application/json" \
-     -d '{"email":"admin@escola.com","senha":"admin123"}'
+     -d "{\"email\":\"$ADMIN_EMAIL\",\"senha\":\"$ADMIN_SENHA\"}"
    ```
 
    A resposta traz o `token` e os dados básicos do usuário autenticado (`id`, `nome`, `email`,
@@ -138,7 +140,7 @@ rotas protegidas diretamente pela interface.
 - **`/api/alunos/{alunoId}/*`** — exige token válido (admin ou aluno). Um aluno só acessa quando
   `alunoId` é o seu próprio id; um administrador pode acessar os dados de qualquer aluno.
 - Não existe endpoint para cadastrar administradores: o único admin do sistema já vem
-  pré-cadastrado no banco em memória (credenciais na seção de dados fake abaixo).
+  pré-cadastrado no banco em memória (e-mail e senha só no `.env`).
 - Quando um administrador cadastra um aluno (`POST /api/admin/alunos`), ele também define a senha
   inicial de acesso desse aluno (campo `senha`, obrigatório no cadastro).
 - Senhas nunca são retornadas pela API — são armazenadas apenas como hash (bcrypt).
@@ -146,21 +148,22 @@ rotas protegidas diretamente pela interface.
 ## Dados fake pré-carregados
 
 Ao iniciar, o banco em memória já vem populado com os dados abaixo (ids legíveis, para facilitar
-testes manuais via Swagger UI ou curl). Todas as senhas abaixo são apenas para demonstração.
+testes manuais via Swagger UI ou curl). E-mail e senha **não** são documentados aqui: use o
+`.env` (`ADMIN_EMAIL` / `ADMIN_SENHA` e `ALUNO_EMAIL` / `ALUNO_SENHA`).
 
 ### Administrador (`/api/auth/login`)
 
-| id               | nome                       | email             | senha    |
-|------------------|-----------------------------|-------------------|----------|
-| `admin-principal`| Administrador do Sistema   | admin@escola.com  | admin123 |
+| id               | nome                       |
+|------------------|-----------------------------|
+| `admin-principal`| Administrador do Sistema   |
 
 ### Alunos (`/api/admin/alunos`)
 
-| id                   | nome          | email                       | matrícula | senha  |
-|----------------------|---------------|------------------------------|-----------|--------|
-| `aluno-ana-souza`    | Ana Souza     | ana.souza@example.com       | 2024001   | 123456 |
-| `aluno-bruno-lima`   | Bruno Lima    | bruno.lima@example.com      | 2024002   | 123456 |
-| `aluno-carla-mendes` | Carla Mendes  | carla.mendes@example.com    | 2024003   | 123456 |
+| id                   | nome          | matrícula |
+|----------------------|---------------|-----------|
+| `aluno-ana-souza`    | Ana Souza     | 2024001   |
+| `aluno-bruno-lima`   | Bruno Lima    | 2024002   |
+| `aluno-carla-mendes` | Carla Mendes  | 2024003   |
 
 ### Disciplinas (`/api/admin/disciplinas`)
 
@@ -201,10 +204,10 @@ testes manuais via Swagger UI ou curl). Todas as senhas abaixo são apenas para 
 ### Exemplos rápidos de uso
 
 ```bash
-# Login como admin
+# Login como admin (ADMIN_EMAIL e ADMIN_SENHA vêm do .env)
 ADMIN_TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@escola.com","senha":"admin123"}' | node -pe 'JSON.parse(require("fs").readFileSync(0)).token')
+  -d "{\"email\":\"$ADMIN_EMAIL\",\"senha\":\"$ADMIN_SENHA\"}" | node -pe 'JSON.parse(require("fs").readFileSync(0)).token')
 
 # Admin: listar alunos
 curl http://localhost:3000/api/admin/alunos -H "Authorization: Bearer $ADMIN_TOKEN"
@@ -221,10 +224,10 @@ curl -X POST http://localhost:3000/api/admin/notas \
   -H "Content-Type: application/json" \
   -d '{"alunoId":"aluno-ana-souza","disciplinaId":"disciplina-matematica","valor":7.8,"tipo":"trabalho"}'
 
-# Login como aluno (Ana)
+# Login como aluno (ALUNO_EMAIL e ALUNO_SENHA vêm do .env)
 ALUNO_TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"ana.souza@example.com","senha":"123456"}' | node -pe 'JSON.parse(require("fs").readFileSync(0)).token')
+  -d "{\"email\":\"$ALUNO_EMAIL\",\"senha\":\"$ALUNO_SENHA\"}" | node -pe 'JSON.parse(require("fs").readFileSync(0)).token')
 
 # Aluno: ver minhas disciplinas
 curl http://localhost:3000/api/alunos/aluno-ana-souza/disciplinas -H "Authorization: Bearer $ALUNO_TOKEN"
@@ -263,6 +266,10 @@ test/
   [`test/Externo/alunos.externo.test.js`](test/Externo/alunos.externo.test.js) e
   [`test/data/alunos-fluxo.json`](test/data/alunos-fluxo.json).
 
+E-mail e senha **não** vão no README, nos JSON nem no Gherkin. Copie
+[`.env.example`](.env.example) para `.env` e preencha `ADMIN_EMAIL`, `ADMIN_SENHA`,
+`ALUNO_EMAIL` e `ALUNO_SENHA`. O `.env` está no `.gitignore`.
+
 ```bash
 # todos os testes (a API precisa de estar up para os Externo)
 npm test
@@ -298,33 +305,37 @@ Feature: Login
 
   Scenario: deve retornar 200 quando o usuário e senha forem corretos
     Given que a app Express está disponível em memória
+    And que ADMIN_EMAIL e ADMIN_SENHA estão definidos no .env
     When envio POST /api/auth/login com:
-      | email            | senha    |
-      | admin@escola.com | admin123 |
+      | email       | senha       |
+      | ADMIN_EMAIL | ADMIN_SENHA |
     Then o status HTTP deve ser 200
 
   Scenario: deve retornar 400 quando a requisição for inválida (dados ausentes)
     Given que a app Express está disponível em memória
+    And que ADMIN_EMAIL está definido no .env
     When envio POST /api/auth/login com:
-      | email            | senha |
-      | admin@escola.com |       |
+      | email       | senha |
+      | ADMIN_EMAIL |       |
     Then o status HTTP deve ser 400
     And o corpo deve conter a propriedade "error" em string
 
   Scenario: deve retornar 401 quando a senha estiver inválida
     Given que a app Express está disponível em memória
+    And que ADMIN_EMAIL está definido no .env
     When envio POST /api/auth/login com:
-      | email            | senha |
-      | admin@escola.com | 8454  |
+      | email       | senha            |
+      | ADMIN_EMAIL | senha inválida   |
     Then o status HTTP deve ser 401
     And o corpo deve conter a propriedade "error" em string
 
   Scenario: deve retornar 500 Mock
     Given que o serviço de autenticação está simulado com Sinon
     And que authService.login lança o erro "ERRO CASTRATROFICO"
+    And que ADMIN_EMAIL está definido no .env
     When envio POST /api/auth/login com:
-      | email            | senha |
-      | admin@escola.com | 8454  |
+      | email       | senha            |
+      | ADMIN_EMAIL | senha inválida   |
     Then o status HTTP deve ser 500
     And o corpo deve conter error "Erro interno do servidor."
 ```
@@ -342,20 +353,21 @@ Feature: Fluxo de aluno
   Para validar o fluxo de ponta a ponta
 
   Examples:
-    | nomeCenario  | nome                  | emailPrefix     | matriculaPrefix | senha  | disciplinaId               | titulo                 | descricao                               |
-    | aluna Joana  | Joana Novaes Kardec   | novaes.kardec   | 2027            | 123456 | disciplina-matematica      | Lista de Exercicios 2  | Resolucao dos exercicios propostos.     |
-    | aluno Marcos | Marcos Oliveira Lima  | marcos.oliveira | 2028            | 654321 | disciplina-programacao-web | Projeto Web Responsivo | Implementacao de uma pagina responsiva. |
+    | nomeCenario | nome | matriculaPrefix | disciplinaId               | titulo                    |
+    | aluna Beatriz | Beatriz Alves Pacheco | 2026101 | disciplina-matematica | Relatorio de Equacoes do 2 Grau |
+    | aluno Thiago  | Thiago Mendes Coutinho | 2026102 | disciplina-programacao-web | Portal de Eventos Escolares |
 
   Scenario Outline: deve realizar login como administrador
     Given que a API está em execução
-    When envio POST /api/auth/login com email "admin@escola.com" e senha "admin123"
+    And que ADMIN_EMAIL e ADMIN_SENHA estão definidos no .env
+    When envio POST /api/auth/login com ADMIN_EMAIL e ADMIN_SENHA
     Then o status HTTP deve ser 200
     And o corpo deve conter um token JWT em string
-    And o usuário autenticado deve ter email "admin@escola.com" e role "admin"
+    And o usuário autenticado deve ter email ADMIN_EMAIL e role "admin"
 
   Scenario Outline: deve cadastrar um aluno com dados únicos
     Given que o administrador está autenticado
-    When envio POST /api/admin/alunos com nome "<nome>", e-mail único a partir de "<emailPrefix>", matrícula única a partir de "<matriculaPrefix>" e senha "<senha>"
+    When envio POST /api/admin/alunos com nome "<nome>", e-mail único, matrícula única a partir de "<matriculaPrefix>" e senha da massa de teste
     Then o status HTTP deve ser 201
     And o corpo deve incluir nome, email e matricula enviados
     And o corpo não deve conter o campo senha
@@ -369,7 +381,7 @@ Feature: Fluxo de aluno
     And o corpo deve incluir alunoId e disciplinaId "<disciplinaId>"
 
   Scenario Outline: deve realizar login como o aluno cadastrado
-    Given que o aluno foi cadastrado com e-mail único e senha "<senha>"
+    Given que o aluno foi cadastrado com e-mail único e senha da massa de teste
     When envio POST /api/auth/login com o e-mail e a senha desse aluno
     Then o status HTTP deve ser 200
     And o usuário autenticado deve incluir id, nome "<nome>", email e role "aluno"
@@ -404,14 +416,15 @@ Feature: Fluxo aluno, lista e disciplina Métricas da IA
 
   Scenario: deve realizar login como administrador
     Given que a API está em execução
-    When envio POST /api/auth/login com email "admin@escola.com" e senha "admin123"
+    And que ADMIN_EMAIL e ADMIN_SENHA estão definidos no .env
+    When envio POST /api/auth/login com ADMIN_EMAIL e ADMIN_SENHA
     Then o status HTTP deve ser 200
     And o corpo deve conter um token JWT em string
-    And o usuário autenticado deve ter email "admin@escola.com" e role "admin"
+    And o usuário autenticado deve ter email ADMIN_EMAIL e role "admin"
 
   Scenario: deve criar um aluno e validar 201
     Given que o administrador está autenticado
-    When envio POST /api/admin/alunos com nome "Ana Souza", e-mail único a partir de "ana.souza", matrícula única a partir de "2024001" e senha "123456"
+    When envio POST /api/admin/alunos com nome, e-mail único, matrícula única e senha da massa de teste
     Then o status HTTP deve ser 201
     And o corpo deve incluir nome, email e matricula enviados
     And o id do aluno deve ser uma string
@@ -457,22 +470,22 @@ Feature: Casos negativos de cadastro, autenticação e entrega
 
   Background:
     Given que a API está em execução
-    And que as credenciais do administrador seed são email "admin@escola.com" e senha "admin123"
+    And que ADMIN_EMAIL e ADMIN_SENHA estão definidos no .env
 
   Scenario: deve realizar login como administrador
-    When envio POST /api/auth/login com as credenciais do administrador
+    When envio POST /api/auth/login com ADMIN_EMAIL e ADMIN_SENHA
     Then o status HTTP deve ser 200
     And o corpo deve conter um token JWT em string
 
   Scenario: deve cadastrar um aluno para os casos negativos
     Given que o administrador está autenticado
-    When envio POST /api/admin/alunos com nome "Aluno Casos Negativos", e-mail único a partir de "aluno.negativo", matrícula única a partir de "NEG" e senha "123456"
+    When envio POST /api/admin/alunos com nome, e-mail único, matrícula única e senha da massa de teste
     Then o status HTTP deve ser 201
     And o id do aluno deve ser uma string
 
   Scenario: deve realizar login como o aluno cadastrado
     Given que o aluno dos casos negativos foi cadastrado
-    When envio POST /api/auth/login com o e-mail e a senha "123456" desse aluno
+    When envio POST /api/auth/login com o e-mail e a senha desse aluno
     Then o status HTTP deve ser 200
     And o corpo deve conter um token JWT em string
 
@@ -495,7 +508,7 @@ Feature: Casos negativos de cadastro, autenticação e entrega
     And o error deve ser 'Os campos "disciplinaId" e "titulo" são obrigatórios.'
 
   Scenario: deve retornar 400 ao autenticar sem senha
-    When envio POST /api/auth/login apenas com email "admin@escola.com"
+    When envio POST /api/auth/login apenas com ADMIN_EMAIL
     Then o status HTTP deve ser 400
     And o error deve ser 'Os campos "email" e "senha" são obrigatórios.'
 
@@ -512,7 +525,7 @@ Feature: Casos negativos de cadastro, autenticação e entrega
 
   Scenario: deve retornar 401 ao autenticar com senha inválida
     Given que o aluno dos casos negativos está cadastrado
-    When envio POST /api/auth/login com o e-mail desse aluno e senha "senha-invalida"
+    When envio POST /api/auth/login com o e-mail desse aluno e uma senha inválida
     Then o status HTTP deve ser 401
     And o error deve ser "E-mail ou senha inválidos."
 
@@ -530,8 +543,8 @@ Feature: Casos negativos de cadastro, autenticação e entrega
 
   Scenario: deve retornar 409 ao cadastrar aluno com e-mail duplicado
     Given que o administrador está autenticado
-    And que já existe o aluno seed Ana Souza com email "ana.souza@example.com" e matrícula "2024001"
-    When envio POST /api/admin/alunos com nome "Ana Souza", email "ana.souza@example.com", matricula "2024001" e senha "123456"
+    And que já existe um aluno seed com o mesmo e-mail e matrícula (ALUNO_EMAIL no .env)
+    When envio POST /api/admin/alunos com os dados duplicados desse aluno seed
     Then o status HTTP deve ser 409
     And o error deve ser "Já existe um aluno cadastrado com essa matrícula ou e-mail."
 
@@ -564,18 +577,18 @@ Feature: Fluxo de 20 alunos, Matemática, notas e trabalhos
 
   Background:
     Given que a API está em execução
-    And que as credenciais do administrador seed são email "admin@escola.com" e senha "admin123"
-    And que o lote tem 20 nomes e senha "123456"
+    And que ADMIN_EMAIL e ADMIN_SENHA estão definidos no .env
+    And que o lote tem 20 nomes e senha da massa de teste
     And que a disciplina do lote se chama "Matemática" com cargaHoraria 60
     And que a nota inicial tem valor 7, tipo "prova" e descricao "Prova 1 - Álgebra"
     And que a nota atualizada tem valor 8.5
     And que a nota seed é "nota-ana-matematica-prova1" do aluno "Ana Souza"
 
   Scenario: deve realizar login como administrador
-    When envio POST /api/auth/login com as credenciais do administrador
+    When envio POST /api/auth/login com ADMIN_EMAIL e ADMIN_SENHA
     Then o status HTTP deve ser 200
     And o corpo deve conter um token JWT em string
-    And o usuário autenticado deve ter email "admin@escola.com" e role "admin"
+    And o usuário autenticado deve ter email ADMIN_EMAIL e role "admin"
 
   Scenario: deve cadastrar 20 alunos
     Given que o administrador está autenticado
@@ -588,7 +601,7 @@ Feature: Fluxo de 20 alunos, Matemática, notas e trabalhos
 
   Scenario: deve realizar login como um dos alunos cadastrados
     Given que o primeiro aluno do lote foi cadastrado
-    When envio POST /api/auth/login com o e-mail e a senha "123456" desse aluno
+    When envio POST /api/auth/login com o e-mail e a senha desse aluno
     Then o status HTTP deve ser 200
     And o corpo deve conter um token JWT em string
     And o usuário autenticado deve incluir id, nome, email e role "aluno"

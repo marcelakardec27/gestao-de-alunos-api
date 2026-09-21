@@ -1,6 +1,20 @@
+import 'dotenv/config';
 import request from 'supertest';
 
-export async function loginAdmin(urlBase, credenciais) {
+export function credenciaisAdmin() {
+    const email = process.env.ADMIN_EMAIL;
+    const senha = process.env.ADMIN_SENHA;
+
+    if (!email || !senha) {
+        throw new Error(
+            'Oculte as informações sensíveis no .env: defina ADMIN_EMAIL e ADMIN_SENHA. Consulte .env.example.'
+        );
+    }
+
+    return { email, senha };
+}
+
+export async function loginAdmin(urlBase, credenciais = credenciaisAdmin()) {
     const resposta = await request(urlBase)
         .post('/api/auth/login')
         .send(credenciais);

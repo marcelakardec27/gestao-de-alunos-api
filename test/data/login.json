@@ -2,16 +2,12 @@
   "casos": [
     {
       "nome": "quando o usuário e senha forem corretos",
-      "payload": {
-        "email": "admin@escola.com",
-        "senha": "admin123"
-      },
+      "usarSenhaAdmin": true,
       "statusEsperado": 200
     },
     {
       "nome": "quando a requisição for inválida (dados ausentes)",
       "payload": {
-        "email": "admin@escola.com",
         "senha": ""
       },
       "statusEsperado": 400,
@@ -20,7 +16,6 @@
     {
       "nome": "quando a senha estiver inválida",
       "payload": {
-        "email": "admin@escola.com",
         "senha": "8454"
       },
       "statusEsperado": 401,
@@ -29,7 +24,6 @@
   ],
   "mock500": {
     "payload": {
-      "email": "admin@escola.com",
       "senha": "8454"
     },
     "statusEsperado": 500,

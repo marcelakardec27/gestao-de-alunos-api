@@ -1,8 +1,4 @@
 {
-  "admin": {
-    "email": "admin@escola.com",
-    "senha": "admin123"
-  },
   "cenarios": [
     {
       "nomeCenario": "aluna Beatriz",
