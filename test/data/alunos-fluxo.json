@@ -4,41 +4,41 @@
     "senha": "admin123"
   },
   "cenarios": [
-  {
-    "nomeCenario": "aluna Joana",
-    "aluno": {
-      "nome": "Joana Novaes Kardec",
-      "emailPrefix": "novaes.kardec",
-      "matriculaPrefix": "2027",
-      "senha": "123456"
+    {
+      "nomeCenario": "aluna Beatriz",
+      "aluno": {
+        "nome": "Beatriz Alves Pacheco",
+        "emailPrefix": "beatriz.pacheco",
+        "matriculaPrefix": "2026101",
+        "senha": "Bia#2026"
+      },
+      "disciplinaId": "disciplina-matematica",
+      "trabalho": {
+        "titulo": "Relatorio de Equacoes do 2 Grau",
+        "descricao": "Resolucao comentada de dez problemas de equacoes quadraticas."
+      }
     },
-    "disciplinaId": "disciplina-matematica",
-    "trabalho": {
-      "titulo": "Lista de Exercicios 2",
-      "descricao": "Resolucao dos exercicios propostos."
+    {
+      "nomeCenario": "aluno Thiago",
+      "aluno": {
+        "nome": "Thiago Mendes Coutinho",
+        "emailPrefix": "thiago.coutinho",
+        "matriculaPrefix": "2026102",
+        "senha": "Thi@2026"
+      },
+      "disciplinaId": "disciplina-programacao-web",
+      "trabalho": {
+        "titulo": "Portal de Eventos Escolares",
+        "descricao": "Pagina inicial com grade de horarios e formulario de inscricao."
+      }
     }
-  },
-  {
-    "nomeCenario": "aluno Marcos",
-    "aluno": {
-      "nome": "Marcos Oliveira Lima",
-      "emailPrefix": "marcos.oliveira",
-      "matriculaPrefix": "2028",
-      "senha": "654321"
-    },
-    "disciplinaId": "disciplina-programacao-web",
-    "trabalho": {
-      "titulo": "Projeto Web Responsivo",
-      "descricao": "Implementacao de uma pagina responsiva."
-    }
-  }
   ],
   "metricas": {
     "aluno": {
-      "nome": "Ana Souza",
-      "emailPrefix": "ana.souza",
-      "matriculaPrefix": "2024001",
-      "senha": "123456"
+      "nome": "Larissa Pires Albuquerque",
+      "emailPrefix": "larissa.albuquerque",
+      "matriculaPrefix": "2026201",
+      "senha": "Lari#2026"
     },
     "disciplina": {
       "nome": "Métricas da IA",
@@ -48,18 +48,18 @@
   },
   "negativos": {
     "aluno": {
-      "nome": "Aluno Casos Negativos",
-      "emailPrefix": "aluno.negativo",
-      "matriculaPrefix": "NEG",
-      "senha": "123456"
+      "nome": "Renato Farias Queiroz",
+      "emailPrefix": "renato.queiroz",
+      "matriculaPrefix": "NEG26",
+      "senha": "Ren#2026"
     },
     "alunoSemPermissao": {
-      "nome": "Aluno Sem Permissao",
-      "emailPrefix": "sem.permissao",
+      "nome": "Patricia Nogueira Vale",
+      "emailPrefix": "patricia.vale",
       "matriculaPrefix": "NEG403"
     },
-    "senhaInvalida": "senha-invalida",
-    "tokenInvalido": "token-invalido",
+    "senhaInvalida": "senha-errada-2026",
+    "tokenInvalido": "token-ficticio-invalido",
     "alunoDuplicado": {
       "nome": "Ana Souza",
       "email": "ana.souza@example.com",
@@ -70,8 +70,64 @@
     "disciplinaId": "disciplina-matematica",
     "disciplinaSemMatricula": "disciplina-historia",
     "trabalho": {
-      "titulo": "Entrega invalida",
-      "descricao": "Nao deve ser aceita."
+      "titulo": "Ensaio fora do prazo",
+      "descricao": "Entrega que nao deve ser aceita sem matricula ou permissao."
+    }
+  },
+  "loteMatematica": {
+    "aluno": {
+      "emailPrefix": "turma.matematica",
+      "matriculaPrefix": "MAT26",
+      "senha": "Lote#2026"
+    },
+    "nomes": [
+      "Aline Costa Vasconcelos",
+      "Bruno Tavares Mello",
+      "Cecilia Prado Antunes",
+      "Daniela Moraes Pinto",
+      "Eduardo Siqueira Ramos",
+      "Fernanda Leal Barbosa",
+      "Gustavo Nogueira Dias",
+      "Helena Campos Freitas",
+      "Igor Batista Correa",
+      "Juliana Reis Figueiredo",
+      "Kaio Monteiro Braga",
+      "Livia Andrade Cunha",
+      "Mateus Oliveira Paiva",
+      "Natalia Souza Guimaraes",
+      "Otavio Lima Fernandes",
+      "Priscila Duarte Azevedo",
+      "Ricardo Pimentel Rocha",
+      "Sabrina Teixeira Lopes",
+      "Tomas Carvalho Nunes",
+      "Vanessa Moreira Santos"
+    ],
+    "disciplina": {
+      "nome": "Matemática",
+      "codigoPrefix": "MAT26",
+      "cargaHoraria": 60
+    },
+    "nota": {
+      "valorInicial": 6.5,
+      "valorAtualizado": 8.5,
+      "tipo": "prova",
+      "descricao": "Prova bimestral - Funcoes e grafico"
+    },
+    "notaSeed": {
+      "id": "nota-ana-matematica-prova1",
+      "alunoId": "aluno-ana-souza",
+      "nomeAluno": "Ana Souza",
+      "disciplinaId": "disciplina-matematica",
+      "valor": 8.5,
+      "tipo": "prova",
+      "descricao": "Prova 1 - Álgebra"
+    },
+    "trabalho": {
+      "titulo": "Lista de Funcoes Afins",
+      "descricao": "Resolucao das questoes 1 a 15 da lista de funcoes afins."
+    },
+    "filtroTrabalho": {
+      "status": "entregue"
     }
   }
 }
