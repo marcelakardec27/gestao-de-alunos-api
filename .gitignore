@@ -1,4 +1,20 @@
+# Dependências
 node_modules/
-npm-debug.log*
+
+# Segredos e ambiente local
 .env
+.env.local
+.env.*.local
+
+# Logs (npm, Yarn e arranque da API no CI)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Relatório Mocha + Mochawesome (gerado em cada execução)
+mochawesome-report/
+
+# SO
 .DS_Store
+Thumbs.db

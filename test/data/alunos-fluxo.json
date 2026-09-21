@@ -32,5 +32,46 @@
       "descricao": "Implementacao de uma pagina responsiva."
     }
   }
-  ]
+  ],
+  "metricas": {
+    "aluno": {
+      "nome": "Ana Souza",
+      "emailPrefix": "ana.souza",
+      "matriculaPrefix": "2024001",
+      "senha": "123456"
+    },
+    "disciplina": {
+      "nome": "Métricas da IA",
+      "codigoPrefix": "MIA",
+      "cargaHoraria": 40
+    }
+  },
+  "negativos": {
+    "aluno": {
+      "nome": "Aluno Casos Negativos",
+      "emailPrefix": "aluno.negativo",
+      "matriculaPrefix": "NEG",
+      "senha": "123456"
+    },
+    "alunoSemPermissao": {
+      "nome": "Aluno Sem Permissao",
+      "emailPrefix": "sem.permissao",
+      "matriculaPrefix": "NEG403"
+    },
+    "senhaInvalida": "senha-invalida",
+    "tokenInvalido": "token-invalido",
+    "alunoDuplicado": {
+      "nome": "Ana Souza",
+      "email": "ana.souza@example.com",
+      "matricula": "2024001",
+      "senha": "123456"
+    },
+    "alunoAlheioId": "aluno-ana-souza",
+    "disciplinaId": "disciplina-matematica",
+    "disciplinaSemMatricula": "disciplina-historia",
+    "trabalho": {
+      "titulo": "Entrega invalida",
+      "descricao": "Nao deve ser aceita."
+    }
+  }
 }

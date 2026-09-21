@@ -1,57 +1,35 @@
 import request from 'supertest';
-import app from '../../src/app.js';
 import { expect } from 'chai';
-import * as sinon from "sinon";
+import { readFileSync } from 'node:fs';
+import { URL } from 'node:url';
+import * as sinon from 'sinon';
+import app from '../../src/app.js';
 import authService from '../../src/services/auth.service.js';
 
+const dadosLogin = JSON.parse(
+    readFileSync(new URL('../data/login.json', import.meta.url), 'utf8')
+);
+
 describe('Login', () => {
-    it('deve retornar 200 quando o usuário e senha forem corretos', async () => {
-        const loginResposta = await request(app)
-            .post('/api/auth/login')
-            .set('Content-Type', 'application/json')
-            .send({ 'email': 'admin@escola.com', 'senha': 'admin123' });
-        
-        expect(loginResposta.status).to.equal(200);
+    afterEach(() => {
+        sinon.restore();
     });
 
-    it('deve retornar 400 quando a requisição for inválida (dados ausentes)', async () => {
-        const loginResposta = await request(app)
-            .post('/api/auth/login')
-            .set('Content-Type', 'application/json')
-            .send({ 'email': 'admin@escola.com',
-                    'senha': ''
+    for (const caso of dadosLogin.casos) {
+        it(`deve retornar ${caso.statusEsperado} ${caso.nome}`, async () => {
+            const loginResposta = await request(app)
+                .post('/api/auth/login')
+                .set('Content-Type', 'application/json')
+                .send(caso.payload);
 
-             }); // 👈 Faltando preencher o campo 'senha'
+            expect(loginResposta.status).to.equal(caso.statusEsperado);
 
-        // Valida se o status HTTP é 400
-        expect(loginResposta.status).to.equal(400);
-
-        // Valida a presença da propriedade "error" no objeto JSON retornado
-        expect(loginResposta.body).to.have.property('error');
-        expect(loginResposta.body.error).to.be.a('string');
-             
-        //console.log(loginResposta.body.error);
-        //expect(loginResposta.status.body.error).to.equal('Os campos "email" e "senha" são obrigatórios.');
-
+            if (caso.esperaError) {
+                expect(loginResposta.body).to.have.property('error');
+                expect(loginResposta.body.error).to.be.a('string');
+            }
         });
-
-
-     it('deve retornar 401 quando o senha estiver inválida', async () => {
-        const loginResposta = await request(app)
-            .post('/api/auth/login')
-            .set('Content-Type', 'application/json')
-            .send({ 'email': 'admin@escola.com',
-                    'senha': '8454'
-
-             }); // 👈 Faltando preencher o campo 'senha' inválida
-
-        // Valida se o status HTTP é 401
-        expect(loginResposta.status).to.equal(401);
-
-        // Valida se a mensagem de erro esperada foi retornada
-        expect(loginResposta.body).to.have.property('error');
-        expect(loginResposta.body.error).to.be.a('string');
-    });
+    }
 
     it('deve retornar 500 Mock', async () => {
         const authServiceMock = sinon.stub(authService, 'login');
@@ -60,21 +38,11 @@ describe('Login', () => {
         const loginResposta = await request(app)
             .post('/api/auth/login')
             .set('Content-Type', 'application/json')
-            .send({ 'email': 'admin@escola.com',
-                    'senha': '8454'
+            .send(dadosLogin.mock500.payload);
 
-             }); // 👈 Faltando preencher o campo 'senha' inválida
-
-        //console.log(loginResposta.body.error);
-        // Valida se o status HTTP é 500
-        expect(loginResposta.status).to.equal(500);
-        expect(loginResposta.body.error).to.equal('Erro interno do servidor.');
-
-        // Valida se a mensagem de erro esperada foi retornada
+        expect(loginResposta.status).to.equal(dadosLogin.mock500.statusEsperado);
         expect(loginResposta.body).to.have.property('error');
         expect(loginResposta.body.error).to.be.a('string');
-
-        sinon.restore();
-        
+        expect(loginResposta.body.error).to.equal(dadosLogin.mock500.error);
     });
 });
