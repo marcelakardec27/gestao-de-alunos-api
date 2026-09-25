@@ -18,10 +18,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Clone do projeto
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Configuração do Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -38,19 +38,13 @@ jobs:
   unidade:
     runs-on: ubuntu-24.04
     needs: [inspecao]
-    env:
-      API_BASE_URL: http://localhost:3000
-      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-      ADMIN_SENHA: ${{ secrets.ADMIN_SENHA }}
-      ALUNO_EMAIL: ${{ secrets.ALUNO_EMAIL }}
-      ALUNO_SENHA: ${{ secrets.ALUNO_SENHA }}
     if: always() # Garante a execução dos testes independentemente do linter
     steps:
       - name: Clone do projeto
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Configuração do Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -76,7 +70,7 @@ jobs:
         run: yarn test --reporter mochawesome --reporter-options reportDir=mochawesome-report,overwrite=true,html=true,json=true
 
       - name: Salvando relatório de testes unitários
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: relatorio-unitario-mocha

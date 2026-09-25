@@ -17,12 +17,6 @@ jobs:
   mocha-e2e-tests:
     name: Executar Testes E2E (Mocha)
     runs-on: ubuntu-24.04
-    env:
-      API_BASE_URL: http://localhost:3000
-      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-      ADMIN_SENHA: ${{ secrets.ADMIN_SENHA }}
-      ALUNO_EMAIL: ${{ secrets.ALUNO_EMAIL }}
-      ALUNO_SENHA: ${{ secrets.ALUNO_SENHA }}
 
     # Executa se o gatilho for um push OU se for um workflow_run concluído com sucesso
     if: >
@@ -32,11 +26,11 @@ jobs:
     steps:
       # Clone do projeto para a máquina virtual
       - name: Checkout do código
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       # Configuração do Node.js na versão LTS estável
       - name: Configurar Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version: 24.x
 
@@ -67,7 +61,7 @@ jobs:
 
       # Salvando relatórios de testes (Mochawesome)
       - name: Salvar relatório Mochawesome
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         if: always() # Garante o upload mesmo se os testes falharem
         with:
           name: relatorio-testes-mocha-deploy

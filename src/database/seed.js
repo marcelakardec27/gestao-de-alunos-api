@@ -1,23 +1,11 @@
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import db from './db.js';
+import { credenciaisAdminSeed, credenciaisAlunoSeed } from '../config/credenciaisPadrao.js';
 
 const agora = new Date().toISOString();
-
-function exigirEnv(nome) {
-  const valor = process.env[nome];
-  if (!valor) {
-    throw new Error(
-      `Oculte as informações sensíveis no .env: defina ${nome}. Consulte .env.example.`
-    );
-  }
-  return valor;
-}
-
-const emailAdmin = exigirEnv('ADMIN_EMAIL');
-const senhaAdmin = exigirEnv('ADMIN_SENHA');
-const emailAluno = exigirEnv('ALUNO_EMAIL');
-const senhaAluno = exigirEnv('ALUNO_SENHA');
+const { email: emailAdmin, senha: senhaAdmin } = credenciaisAdminSeed();
+const { email: emailAluno, senha: senhaAluno } = credenciaisAlunoSeed();
 
 function seedAdministradores() {
   const administradores = [

@@ -15,22 +15,16 @@ jobs:
   mocha-tests:
     # máquina onde o job vai rodar
     runs-on: ubuntu-24.04
-    env:
-      API_BASE_URL: http://localhost:3000
-      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-      ADMIN_SENHA: ${{ secrets.ADMIN_SENHA }}
-      ALUNO_EMAIL: ${{ secrets.ALUNO_EMAIL }}
-      ALUNO_SENHA: ${{ secrets.ALUNO_SENHA }}
 
     # passos do job
     steps:
       # clone do projeto para dentro da máquina virtual
       - name: Checkout do código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # instalação do Node.js
       - name: Configurar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
 
@@ -62,7 +56,7 @@ jobs:
       # Salvar relatórios (Garante o upload da pasta correta mesmo se o teste falhar)
       - name: Salvando relatórios de testes
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Relatório de Testes Mochawesome
           path: mochawesome-report/
