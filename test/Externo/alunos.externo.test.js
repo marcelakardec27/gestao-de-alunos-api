@@ -3,7 +3,7 @@ import request from 'supertest';
 import { expect } from 'chai';
 import { readFileSync } from 'node:fs';
 import { URL } from 'node:url';
-import { loginAdmin, loginAluno, credenciaisAdmin } from '../helpers/auth.helpers.js';
+import { loginAdmin, loginAluno, credenciaisAdmin, credenciaisAluno } from '../helpers/auth.helpers.js';
 
 const dadosTeste = JSON.parse(
     readFileSync(new URL('../data/alunos-fluxo.json', import.meta.url), 'utf8')
@@ -425,7 +425,11 @@ describe('Casos negativos: cadastro, autenticação e entrega', () => {
         const resposta = await request(URL_BASE)
             .post('/api/admin/alunos')
             .set('Authorization', `Bearer ${tokenAdmin}`)
-            .send(negativos.alunoDuplicado);
+            .send({
+                nome: negativos.alunoDuplicado.nome,
+                matricula: negativos.alunoDuplicado.matricula,
+                ...credenciaisAluno()
+            });
 
         expect(resposta.status).to.equal(409);
         expect(resposta.body).to.have.property('error');

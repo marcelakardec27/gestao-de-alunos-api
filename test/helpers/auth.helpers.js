@@ -14,6 +14,19 @@ export function credenciaisAdmin() {
     return { email, senha };
 }
 
+export function credenciaisAluno() {
+    const email = process.env.ALUNO_EMAIL;
+    const senha = process.env.ALUNO_SENHA;
+
+    if (!email || !senha) {
+        throw new Error(
+            'Oculte as informações sensíveis no .env: defina ALUNO_EMAIL e ALUNO_SENHA. Consulte .env.example.'
+        );
+    }
+
+    return { email, senha };
+}
+
 export async function loginAdmin(urlBase, credenciais = credenciaisAdmin()) {
     const resposta = await request(urlBase)
         .post('/api/auth/login')

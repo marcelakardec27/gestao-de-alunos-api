@@ -38,6 +38,12 @@ jobs:
   unidade:
     runs-on: ubuntu-24.04
     needs: [inspecao]
+    env:
+      API_BASE_URL: http://localhost:3000
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      ADMIN_SENHA: ${{ secrets.ADMIN_SENHA }}
+      ALUNO_EMAIL: ${{ secrets.ALUNO_EMAIL }}
+      ALUNO_SENHA: ${{ secrets.ALUNO_SENHA }}
     if: always() # Garante a execução dos testes independentemente do linter
     steps:
       - name: Clone do projeto

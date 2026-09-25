@@ -58,9 +58,7 @@
     "tokenInvalido": "token-ficticio-invalido",
     "alunoDuplicado": {
       "nome": "Ana Souza",
-      "email": "ana.souza@example.com",
-      "matricula": "2024001",
-      "senha": "123456"
+      "matricula": "2024001"
     },
     "alunoAlheioId": "aluno-ana-souza",
     "disciplinaId": "disciplina-matematica",

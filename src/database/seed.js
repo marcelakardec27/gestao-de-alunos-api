@@ -1,19 +1,31 @@
+import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import db from './db.js';
 
 const agora = new Date().toISOString();
 
-// Senha padrão de todos os alunos seedados, apenas para fins de teste/demonstração.
-const SENHA_PADRAO_ALUNO = '123456';
-const SENHA_PADRAO_ADMIN = 'admin123';
+function exigirEnv(nome) {
+  const valor = process.env[nome];
+  if (!valor) {
+    throw new Error(
+      `Oculte as informações sensíveis no .env: defina ${nome}. Consulte .env.example.`
+    );
+  }
+  return valor;
+}
+
+const emailAdmin = exigirEnv('ADMIN_EMAIL');
+const senhaAdmin = exigirEnv('ADMIN_SENHA');
+const emailAluno = exigirEnv('ALUNO_EMAIL');
+const senhaAluno = exigirEnv('ALUNO_SENHA');
 
 function seedAdministradores() {
   const administradores = [
     {
       id: 'admin-principal',
       nome: 'Administrador do Sistema',
-      email: 'admin@escola.com',
-      senha: bcrypt.hashSync(SENHA_PADRAO_ADMIN, 10),
+      email: emailAdmin,
+      senha: bcrypt.hashSync(senhaAdmin, 10),
       role: 'admin',
     },
   ];
@@ -24,14 +36,14 @@ function seedAdministradores() {
 
 function seedAlunos() {
   const alunos = [
-    { id: 'aluno-ana-souza', nome: 'Ana Souza', email: 'ana.souza@example.com', matricula: '2024001' },
+    { id: 'aluno-ana-souza', nome: 'Ana Souza', email: emailAluno, matricula: '2024001' },
     { id: 'aluno-bruno-lima', nome: 'Bruno Lima', email: 'bruno.lima@example.com', matricula: '2024002' },
     { id: 'aluno-carla-mendes', nome: 'Carla Mendes', email: 'carla.mendes@example.com', matricula: '2024003' },
   ];
   alunos.forEach((aluno) =>
     db.insert('alunos', {
       ...aluno,
-      senha: bcrypt.hashSync(SENHA_PADRAO_ALUNO, 10),
+      senha: bcrypt.hashSync(senhaAluno, 10),
       role: 'aluno',
       createdAt: agora,
       updatedAt: agora,

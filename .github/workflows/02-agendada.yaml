@@ -23,6 +23,12 @@ jobs:
   mocha-scheduled-tests:
     # máquina onde o job vai rodar
     runs-on: ubuntu-24.04
+    env:
+      API_BASE_URL: http://localhost:3000
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      ADMIN_SENHA: ${{ secrets.ADMIN_SENHA }}
+      ALUNO_EMAIL: ${{ secrets.ALUNO_EMAIL }}
+      ALUNO_SENHA: ${{ secrets.ALUNO_SENHA }}
 
     # passos do job
     steps:
