@@ -20,13 +20,13 @@ jobs:
     steps:
       # clone do projeto para dentro da máquina virtual
       - name: Checkout do código
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       # instalação do Node.js
       - name: Configurar Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v4
         with:
-          node-version: 24.x
+          node-version: '24'
 
       # instalação do Yarn globalmente
       - name: Instalando Yarn
@@ -55,8 +55,8 @@ jobs:
 
       # Salvar relatórios (Garante o upload da pasta correta mesmo se o teste falhar)
       - name: Salvando relatórios de testes
-        uses: actions/upload-artifact@v5
-        if: ${{ always() }} # Executa mesmo que algum teste falhe
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: Relatório de Testes Mochawesome
-          path: ./mochawesome-report
+          path: mochawesome-report/
